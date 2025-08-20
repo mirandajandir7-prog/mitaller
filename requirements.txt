@@ -1,5 +1,5 @@
 Flask==3.0.3
 Werkzeug==3.0.3
 tinydb==4.8.2
-gunicorn>=21.2.0
 flask-login
+gunicorn
