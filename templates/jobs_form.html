@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %} - Nueva OT{% endblock %}
+{% block content %}
+<h4 class="mb-3">Nueva Orden de Trabajo</h4>
+<form method="post">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Vehículo *</label>
+      <select class="form-select" name="vehicle_id" required>
+        {% for v in vehicles %}
+        <option value="{{ v.id }}">{{ v.plate }} — {{ v.brand }} {{ v.model }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Motivo</label>
+      <input class="form-control" name="reason">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Estado</label>
+      <select class="form-select" name="status">
+        <option value="abierto">Abierto</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="listo">Listo</option>
+        <option value="entregado">Entregado</option>
+        <option value="pausado">Pausado</option>
+      </select>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-control" rows="4" name="description"></textarea>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Odómetro (km)</label>
+      <input class="form-control" name="odometer_km" type="number">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Nivel de combustible</label>
+      <input class="form-control" name="fuel_level">
+    </div>
+  </div>
+
+  <hr>
+  <h6>Checklist</h6>
+  <div class="row g-2 small">
+    {% for k in ['antenas','botiquin','documentos','encendedor','extintor','gato','herramientas','llave1','llave2','llave_rueda','pisos','rueda_repuesto','tag','tapas','triangulos'] %}
+    <div class="col-6 col-md-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="chk_{{k}}" name="chk_{{k}}">
+        <label class="form-check-label" for="chk_{{k}}">{{ k.replace('_',' ')|title }}</label>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-brand">Crear</button>
+    <a class="btn btn-secondary" href="{{ url_for('jobs_list') }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

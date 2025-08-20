@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %} - Presupuesto{% endblock %}
+{% block content %}
+<style>
+@media print { @page { size: A4; margin: 10mm; } .no-print { display:none!important } body{ background:#fff !important; } }
+.sheet { position:relative; }
+.meta-box { border:1px solid currentColor; padding:.35rem .5rem; line-height:1.1rem; min-width:180px; }
+.big-title { border:2px solid currentColor; text-align:center; padding:.25rem; font-weight:800; letter-spacing:.5px; }
+.sec-title{ background: rgba(255,255,255,.08); padding:.5rem .75rem; font-weight:800; text-transform:uppercase; border:1px solid rgba(255,255,255,.2); }
+.cell{ border:1px solid rgba(255,255,255,.25); padding:.35rem .5rem; }
+.grid { display:grid; grid-template-columns: 1fr 1fr; gap:6px 10px; }
+.label { font-weight:700; width:140px; display:inline-block; }
+.totals td { font-weight:700; }
+.tiny { font-size:.9rem; }
+</style>
+
+<div class="card sheet">
+  <div class="watermark"></div>
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" height="52">
+        <div>
+          <div class="fw-bold fs-5">{{ APP_NAME }}</div>
+          <div class="text-secondary tiny">Jirón Hipólito Unanue 837, La Victoria</div>
+        </div>
+      </div>
+      <div class="meta-box text-end">
+        <div><span class="fw-bold">* VERSIÓN</span>&nbsp;&nbsp;{{ (quote.meta.version if quote.meta else '') or '01' }}</div>
+        <div><span class="fw-bold">* FECHA</span>&nbsp;&nbsp;{{ (quote.meta.fecha if quote.meta else quote.created_at)|fecha }}</div>
+        <div><span class="fw-bold">* PÁGINA</span>&nbsp;&nbsp;1/1</div>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <div class="mb-1 tiny">Asunto:</div>
+      <div class="big-title">PRESUPUESTO</div>
+    </div>
+
+    <div class="sec-title mt-3">1. Datos generales</div>
+    <div class="grid">
+      <div class="cell"><span class="label">CLIENTE:</span> {{ client.full_name or quote.client_name or '—' }}</div>
+      <div class="cell"><span class="label">RUC:</span> {{ (quote.meta.ruc if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">CONTACTO:</span> {{ (quote.meta.contacto if quote.meta else '') or client.phone or '—' }}</div>
+      <div class="cell"><span class="label">CONDUCTOR:</span> {{ (quote.meta.conductor if quote.meta else '') or '—' }}</div>
+    </div>
+
+    <div class="sec-title mt-3">2. Datos de la unidad</div>
+    <div class="grid">
+      <div class="cell"><span class="label">UNIDAD:</span> {{ vehicle.plate or (quote.vehicle_label or '—') }}</div>
+      <div class="cell"><span class="label">MODELO:</span> {{ vehicle.model or (quote.meta.modelo if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">MARCA:</span> {{ vehicle.brand or (quote.meta.marca if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">KILOMETRAJE:</span> {{ (quote.meta.kilometraje if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">COMBUSTIBLE:</span> {{ (quote.meta.combustible if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">PLACA:</span> {{ vehicle.plate or (quote.vehicle_label or '—') }}</div>
+      <div class="cell"><span class="label">SERIE:</span> {{ (quote.meta.serie if quote.meta else '') or vehicle.vin or '—' }}</div>
+      <div class="cell"><span class="label">SERIE MOTOR:</span> {{ (quote.meta.serie_motor if quote.meta else '') or '—' }}</div>
+      <div class="cell"><span class="label">ENT. TÉCNICA:</span> {{ (quote.meta.entrega_tecnica if quote.meta else '') or '—' }}</div>
+    </div>
+
+    <div class="sec-title mt-3">3. Descripción</div>
+
+    <div class="cell fw-bold">REPUESTOS :</div>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered align-middle mb-2">
+        <thead>
+          <tr class="text-center">
+            <th style="width:60%">Descripción</th>
+            <th style="width:15%">Precio Unit.</th>
+            <th style="width:10%">Cant.</th>
+            <th style="width:15%">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if quote.items and quote.items|length %}
+            {% for it in quote.items %}
+            <tr>
+              <td>{{ it.desc }}</td>
+              <td class="text-end">S/ {{ "%.2f"|format(it.unit_price or 0) }}</td>
+              <td class="text-center">{{ it.qty or 0 }}</td>
+              <td class="text-end">S/ {{ "%.2f"|format(it.total or ((it.qty or 0)*(it.unit_price or 0))) }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="4" class="text-center text-secondary">Sin ítems de repuestos.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cell fw-bold">MANO DE OBRA:</div>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered align-middle">
+        <thead><tr><th style="width:85%">Detalle</th><th class="text-end" style="width:15%">—</th></tr></thead>
+        <tbody>
+          {% if quote.services_lines and quote.services_lines|length %}
+            {% for s in quote.services_lines %}
+            <tr><td>• {{ s }}</td><td class="text-end">—</td></tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="2" class="text-center text-secondary">Sin detalle de mano de obra.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row g-2 justify-content-end">
+      <div class="col-md-6 col-lg-4">
+        <table class="table table-sm table-bordered totals">
+          <tbody>
+            <tr><td class="text-end">SUBTOTAL</td><td class="text-end">S/ {{ "%.2f"|format(quote.subtotal or 0) }}</td></tr>
+            <tr><td class="text-end">IGV {{ (quote.igv_rate*100 if quote.require_invoice else 0)|int }}%</td><td class="text-end">S/ {{ "%.2f"|format(quote.igv or 0) }}</td></tr>
+            <tr><td class="text-end">TOTAL</td><td class="text-end">S/ {{ "%.2f"|format(quote.total or 0) }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="no-print mt-3 d-flex gap-2">
+  <a class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</a>
+  <a class="btn btn-success" href="{{ url_for('quote_to_job', quote_id=quote.id) }}">Convertir en OT</a>
+  <a class="btn btn-secondary" href="{{ url_for('quotes_list') }}">Volver</a>
+</div>
+{% endblock %}

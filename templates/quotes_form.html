@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %} - Nueva Cotización{% endblock %}
+{% block content %}
+
+<style>
+  .table-input{ background:transparent; border:0; width:100%; color:inherit; }
+  .table-input:focus{ outline:none; box-shadow:none; }
+  .sec-title{ background: rgba(255,255,255,.08); padding:.5rem .75rem; font-weight:800; text-transform:uppercase; border:1px solid rgba(255,255,255,.2); }
+</style>
+
+<form method="post" id="quoteForm">
+  {% if job_id %}<input type="hidden" name="job_id" value="{{ job_id }}">{% endif %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="d-flex gap-2 align-items-center">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" height="32">
+          <h4 class="mb-0">PRESUPUESTO</h4>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group input-group-sm" style="width:140px">
+            <span class="input-group-text fw-bold">Versión</span>
+            <input type="text" class="form-control" name="meta_version" value="01">
+          </div>
+          <div class="input-group input-group-sm" style="width:210px">
+            <span class="input-group-text fw-bold">Fecha</span>
+            <input type="date" class="form-control" name="meta_fecha" id="meta_fecha">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title rounded-top">1. Datos generales</div>
+  <div class="card rounded-top-0 mb-3"><div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Cliente *</label>
+        <input class="form-control" name="client_name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">RUC</label>
+        <input class="form-control" name="meta_ruc">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Contacto</label>
+        <input class="form-control" name="meta_contacto">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Conductor</label>
+        <input class="form-control" name="meta_conductor">
+      </div>
+    </div>
+  </div></div>
+
+  <div class="sec-title rounded-top">2. Datos de la unidad</div>
+  <div class="card rounded-top-0 mb-3"><div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-3"><label class="form-label">Marca</label><input class="form-control" name="meta_marca"></div>
+      <div class="col-md-3"><label class="form-label">Modelo</label><input class="form-control" name="meta_modelo"></div>
+      <div class="col-md-3"><label class="form-label">Serie/VIN</label><input class="form-control" name="meta_serie"></div>
+      <div class="col-md-3"><label class="form-label">Serie Motor</label><input class="form-control" name="meta_serie_motor"></div>
+      <div class="col-md-3"><label class="form-label">Combustible</label><input class="form-control" name="meta_combustible"></div>
+      <div class="col-md-3"><label class="form-label">Placa</label><input class="form-control" name="vehicle" placeholder="ABC-123"></div>
+      <div class="col-md-3"><label class="form-label">Kilometraje</label><input class="form-control" name="meta_kilometraje"></div>
+      <div class="col-md-3"><label class="form-label">Ent. Técnica</label><input class="form-control" name="meta_entrega_tecnica"></div>
+    </div>
+  </div></div>
+
+  <div class="sec-title rounded-top">3. Descripción</div>
+  <div class="card rounded-top-0 mb-3"><div class="card-body">
+    <div class="fw-bold mb-1">Repuestos :</div>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle table-bordered">
+        <thead>
+          <tr class="text-center">
+            <th style="width:60%">Descripción</th>
+            <th style="width:15%">Precio Unit.</th>
+            <th style="width:10%">Cant.</th>
+            <th style="width:15%">Total</th>
+            <th style="width:1%"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <tr>
+            <td><input class="table-input" name="item_desc[]" placeholder="Ej. Motor electrónico de EGR"></td>
+            <td><input class="table-input text-end" name="item_price[]" type="number" step="0.01"></td>
+            <td><input class="table-input text-center" name="item_qty[]" type="number" step="0.01" value="1"></td>
+            <td class="text-end item-total">S/ 0.00</td>
+            <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger" onclick="delRow(this)">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addRow()">＋ Agregar ítem</button>
+
+    <hr class="my-3">
+
+    <div class="fw-bold mb-1">Mano de obra :</div>
+    <textarea class="form-control" name="services" rows="4" placeholder="Escribe cada servicio en una línea."></textarea>
+
+    <div class="row mt-3 g-2 justify-content-end">
+      <div class="col-md-5 col-lg-4">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="need_invoice" name="need_invoice" value="1">
+          <label class="form-check-label" for="need_invoice">Requiere Factura (aplica IGV 18%)</label>
+        </div>
+        <table class="table table-sm table-bordered mb-0">
+          <tbody>
+            <tr><td class="text-end">SUBTOTAL</td><td class="text-end" id="subtotal">S/ 0.00</td></tr>
+            <tr><td class="text-end">IGV <span id="igvLabel">0</span>%</td><td class="text-end" id="igv">S/ 0.00</td></tr>
+            <tr><td class="text-end fw-bold">TOTAL</td><td class="text-end fw-bold" id="total">S/ 0.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <button class="btn btn-success">💾 Guardar</button>
+      <a href="{{ url_for('quotes_list') }}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </div></div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  const f = document.getElementById('meta_fecha');
+  if (f && !f.value){
+    const d=new Date(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    f.value = `${d.getFullYear()}-${m}-${day}`;
+  }
+})();
+function addRow(){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="table-input" name="item_desc[]" placeholder="Descripción"></td>
+    <td><input class="table-input text-end" name="item_price[]" type="number" step="0.01"></td>
+    <td><input class="table-input text-center" name="item_qty[]" type="number" step="0.01" value="1"></td>
+    <td class="text-end item-total">S/ 0.00</td>
+    <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger" onclick="delRow(this)">✕</button></td>
+  `;
+  document.getElementById('itemsBody').appendChild(tr);
+}
+function delRow(btn){
+  const tr = btn.closest('tr'); tr.parentNode.removeChild(tr); recalc();
+}
+function parseNum(v){ const n = parseFloat(v); return isNaN(n)?0:n; }
+function recalc(){
+  let subtotal = 0;
+  document.querySelectorAll('#itemsBody tr').forEach(tr=>{
+    const p = parseNum(tr.querySelector('[name="item_price[]"]').value);
+    const q = parseNum(tr.querySelector('[name="item_qty[]"]').value || 1);
+    const tot = p*q; subtotal += tot;
+    tr.querySelector('.item-total').textContent = 'S/ ' + tot.toFixed(2);
+  });
+  const inv = document.getElementById('need_invoice').checked;
+  const igvRate = inv ? 0.18 : 0;
+  const igv = subtotal * igvRate;
+  const total = subtotal + igv;
+  document.getElementById('igvLabel').textContent = inv ? 18 : 0;
+  document.getElementById('subtotal').textContent = 'S/ ' + subtotal.toFixed(2);
+  document.getElementById('igv').textContent      = 'S/ ' + igv.toFixed(2);
+  document.getElementById('total').textContent    = 'S/ ' + total.toFixed(2);
+}
+document.addEventListener('input', function(e){
+  if (e.target.matches('[name="item_price[]"], [name="item_qty[]"], #need_invoice')) recalc();
+});
+document.getElementById('need_invoice').addEventListener('change', recalc);
+</script>
+{% endblock %}

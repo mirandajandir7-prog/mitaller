@@ -1,0 +1,43 @@
+:root {
+  --brand: #0d6efd;
+  --bg: #0b0f14;
+  --bg-soft: #121821;
+  --card: #0f1520;
+  --muted: #9aa4af;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: #e6edf3;
+}
+
+.navbar, .dropdown-menu { background: var(--bg-soft) !important; }
+.card { background: var(--card); border: 1px solid rgba(255,255,255,.06); }
+.table { color: #e6edf3; }
+.table thead { background: rgba(255,255,255,.06); }
+.table tr { transition: background .2s ease; }
+.table tr:hover { background: rgba(255,255,255,.05); }
+.form-control, .form-select {
+  background: #0e141d; color: #e6edf3; border: 1px solid rgba(255,255,255,.1);
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(13,110,253,.2);
+}
+
+.btn-brand { background: var(--brand); color: white; }
+.btn-brand:hover { filter: brightness(1.1); }
+
+.fade-in { animation: fadein .35s ease-out both; }
+@keyframes fadein { from {opacity:0; transform: translateY(6px)} to{opacity:1; transform:none} }
+
+.badge.bg-dark { background:#1f2630 !important; }
+
+.print-brand {
+  font-weight: 800; letter-spacing: .5px; border:2px solid currentColor; text-align:center; padding:.25rem .5rem;
+}
+.watermark {
+  position:absolute; inset:0; opacity:.06; background-size: 70% auto;
+  background-position:center; background-repeat:no-repeat; pointer-events:none;
+  background-image: url('/static/img/logo.png');
+}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Resumen</h5>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Clientes</span><strong>{{ total_clients }}</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Vehículos</span><strong>{{ total_vehicles }}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Órdenes</span><strong>{{ total_jobs }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="mb-3">Últimas OTs</h5>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>#</th><th>Placa</th><th>Cliente</th><th>Estado</th><th>Ingreso</th><th></th></tr></thead>
+            <tbody>
+              {% for j in jobs %}
+              <tr>
+                <td>{{ j.id }}</td>
+                <td>{{ j.vehicle.plate }}</td>
+                <td>{{ j.client.full_name }}</td>
+                <td>{{ j.status|status_badge|safe }}</td>
+                <td>{{ j.intake_date|fechahora }}</td>
+                <td><a class="btn btn-sm btn-outline-light" href="{{ url_for('job_detail', job_id=j.id) }}">Ver</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6" class="text-center text-secondary">Sin registros.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <h6 class="mb-2">Vehículos recientes</h6>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Placa</th><th>Cliente</th><th>Marca/Modelo</th></tr></thead>
+            <tbody>
+              {% for v in vehicles %}
+              <tr>
+                <td>{{ v.plate }}</td>
+                <td>{{ v.client_name }}</td>
+                <td>{{ v.brand }} {{ v.model }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="3" class="text-center text-secondary">Sin registros.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

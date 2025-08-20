@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %} - Vehículos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h4 class="mb-0">Vehículos</h4>
+  <a class="btn btn-brand" href="{{ url_for('vehicles_new') }}">Nuevo</a>
+</div>
+
+<form class="row g-2 mb-3">
+  <div class="col-md-6">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Buscar por placa, cliente, marca o modelo…">
+  </div>
+  <div class="col-md-2"><button class="btn btn-outline-light w-100">Buscar</button></div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>Placa</th><th>Cliente</th><th>Marca</th><th>Modelo</th><th>Color</th><th></th></tr></thead>
+      <tbody>
+        {% for v in vehicles %}
+        <tr>
+          <td>{{ v.plate }}</td>
+          <td>{{ v.client_name }}</td>
+          <td>{{ v.brand }}</td>
+          <td>{{ v.model }}</td>
+          <td>{{ v.color }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-light" href="{{ url_for('vehicles_edit', vehicle_id=v.id) }}">Editar</a>
+            <form action="{{ url_for('vehicles_delete', vehicle_id=v.id) }}" method="post" class="d-inline">
+              <button class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar vehículo y sus OTs?');">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-secondary">Sin registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

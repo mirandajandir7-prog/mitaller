@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %} - Clientes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h4 class="mb-0">Clientes</h4>
+  <a class="btn btn-brand" href="{{ url_for('clients_new') }}">Nuevo</a>
+</div>
+
+<form class="row g-2 mb-3">
+  <div class="col-md-6">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Buscar por nombre, teléfono o email…">
+  </div>
+  <div class="col-md-2"><button class="btn btn-outline-light w-100">Buscar</button></div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>Nombre</th><th>Contacto</th><th>Vehículos</th><th></th></tr></thead>
+      <tbody>
+        {% for c in clients %}
+        <tr>
+          <td>{{ c.full_name }}</td>
+          <td class="small">
+            {% if c.phone %}<div>📞 {{ c.phone }}</div>{% endif %}
+            {% if c.email %}<div>✉️ {{ c.email }}</div>{% endif %}
+          </td>
+          <td>{{ c.vehicles_count }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-light" href="{{ url_for('clients_edit', client_id=c.id) }}">Editar</a>
+            <form action="{{ url_for('clients_delete', client_id=c.id) }}" method="post" class="d-inline">
+              <button class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar cliente y sus vehículos?');">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-secondary">Sin registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

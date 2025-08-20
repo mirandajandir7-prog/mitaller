@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %} - {{ action }} Cliente{% endblock %}
+{% block content %}
+<h4 class="mb-3">{{ action }} Cliente</h4>
+<form method="post">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Nombre completo *</label>
+      <input class="form-control" name="full_name" value="{{ (client.full_name if client else '') }}" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Teléfono</label>
+      <input class="form-control" name="phone" value="{{ (client.phone if client else '') }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Email</label>
+      <input class="form-control" type="email" name="email" value="{{ (client.email if client else '') }}">
+    </div>
+  </div>
+
+  {% if not client %}
+  <hr>
+  <h6>Vehículo inicial</h6>
+  <div class="row g-3">
+    <div class="col-md-2">
+      <label class="form-label">Placa *</label>
+      <input class="form-control" name="plate" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Marca</label>
+      <input class="form-control" name="brand">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Modelo</label>
+      <input class="form-control" name="model">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Color</label>
+      <input class="form-control" name="color">
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-brand">Guardar</button>
+    <a class="btn btn-secondary" href="{{ url_for('clients_list') }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

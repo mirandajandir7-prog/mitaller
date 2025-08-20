@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %} - Imprimir OT{% endblock %}
+{% block content %}
+<style>
+@media print { @page { size: A4; margin: 10mm; } .no-print { display:none!important } body{ background:#fff !important; } }
+.sheet { position:relative; }
+</style>
+
+<div class="card sheet">
+  <div class="watermark"></div>
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" height="48">
+        <div>
+          <div class="fw-bold fs-5">{{ APP_NAME }}</div>
+          <div class="text-secondary small">Jirón Hipólito Unanue 837, La Victoria</div>
+        </div>
+      </div>
+      <div class="print-brand">ORDEN DE TRABAJO</div>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-md-4"><strong>OT #:</strong> {{ job.id }}</div>
+      <div class="col-md-4"><strong>Fecha:</strong> {{ job.date }}</div>
+      <div class="col-md-4"><strong>Cliente:</strong> {{ job.client_name }}</div>
+      <div class="col-md-4"><strong>Placa:</strong> {{ job.vehicle_plate }}</div>
+      <div class="col-md-4"><strong>Marca/Modelo:</strong> {{ job.vehicle_brand }} {{ job.vehicle_model }}</div>
+    </div>
+
+    <h6 class="mt-3">Trabajos</h6>
+    <ul class="mb-3">
+      {% for t in job.tasks %}<li>{{ t }}</li>{% else %}
+      <li class="text-secondary">Sin detalles.</li>
+      {% endfor %}
+    </ul>
+
+    <div class="row g-2 justify-content-end">
+      <div class="col-md-5">
+        <table class="table table-sm table-bordered">
+          <tbody>
+            <tr><td class="text-end">Subtotal</td><td class="text-end">S/ {{ "%.2f"|format(job.subtotal or 0) }}</td></tr>
+            <tr><td class="text-end">IGV</td><td class="text-end">S/ {{ "%.2f"|format(job.igv or 0) }}</td></tr>
+            <tr><td class="text-end fw-bold">Total</td><td class="text-end fw-bold">S/ {{ "%.2f"|format(job.total or 0) }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-secondary small">* Totales tomados de la última cotización, si existe.</div>
+  </div>
+</div>
+
+<div class="no-print mt-3">
+  <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+  <a class="btn btn-secondary" href="{{ url_for('job_detail', job_id=job.id) }}">Volver</a>
+</div>
+{% endblock %}

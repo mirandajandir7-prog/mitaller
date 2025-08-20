@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %} · Error {{ code }}{% endblock %}
+{% block content %}
+<div class="text-center my-5">
+  <h1 class="display-6">{{ title }}</h1>
+  <p class="text-secondary">{{ msg }}</p>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-2">Volver al inicio</a>
+</div>
+{% endblock %}

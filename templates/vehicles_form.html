@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %} · {{ action }} vehículo{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">{{ action }} vehículo</h1>
+<form method="post" class="card shadow-sm">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Cliente</label>
+        <select name="client_id" class="form-select" required>
+          {% for c in clients %}
+          <option value="{{ c.id }}" {% if vehicle and vehicle.client_id==c.id %}selected{% endif %}>
+            {{ c.full_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Placa *</label>
+        <input class="form-control text-uppercase" name="plate" required value="{{ (vehicle.plate if vehicle) or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Color</label>
+        <input class="form-control" name="color" value="{{ (vehicle.color if vehicle) or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Marca</label>
+        <input class="form-control" name="brand" value="{{ (vehicle.brand if vehicle) or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Modelo</label>
+        <input class="form-control" name="model" value="{{ (vehicle.model if vehicle) or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Año</label>
+        <input type="number" min="1900" max="2100" class="form-control" name="year" value="{{ (vehicle.year if vehicle) or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">VIN</label>
+        <input class="form-control" name="vin" value="{{ (vehicle.vin if vehicle) or '' }}">
+      </div>
+    </div>
+    <p class="text-secondary small mt-2">* Obligatorio</p>
+  </div>
+  <div class="card-footer d-flex justify-content-end gap-2">
+    <a href="{{ url_for('vehicles_list') }}" class="btn btn-outline-secondary">Cancelar</a>
+    <button class="btn btn-primary">{{ action }}</button>
+  </div>
+</form>
+{% endblock %}

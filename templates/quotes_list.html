@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} - Presupuestos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h4 class="mb-0">Presupuestos</h4>
+  <a class="btn btn-brand" href="{{ url_for('quotes_new') }}">Nuevo Presupuesto</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Total</th><th></th></tr></thead>
+      <tbody>
+        {% for q in quotes %}
+        <tr>
+          <td>{{ q.id }}</td>
+          <td>{{ q.created_at|fecha }}</td>
+          <td>{{ q.client_name or '—' }}</td>
+          <td>S/ {{ "%.2f"|format(q.total or 0) }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-light" href="{{ url_for('quote_print', quote_id=q.id) }}">Imprimir</a>
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('quote_duplicate', quote_id=q.id) }}">Duplicar</a>
+            {% if q.client_id and q.vehicle_id %}
+            <a class="btn btn-sm btn-success" href="{{ url_for('quote_to_job', quote_id=q.id) }}">A OT</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-secondary">Sin registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

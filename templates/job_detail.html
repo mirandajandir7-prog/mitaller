@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %} - OT #{{ job.id }}{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-0">OT #{{ job.id }}</h3>
+    <div class="text-secondary small">
+      {{ job.intake_date|fechahora }} · Estado: {{ job.status|status_badge|safe }}
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 no-print">
+    <a href="{{ url_for('quotes_new', job_id=job.id) }}" class="btn btn-success">Presupuesto</a>
+
+    <form action="{{ url_for('job_change_status', job_id=job.id) }}" method="post" class="d-flex gap-2">
+      <select name="status" class="form-select form-select-sm">
+        <option value="abierto"     {% if job.status=='abierto' %}selected{% endif %}>Abierto</option>
+        <option value="en_proceso"  {% if job.status=='en_proceso' %}selected{% endif %}>En proceso</option>
+        <option value="listo"       {% if job.status=='listo' %}selected{% endif %}>Listo</option>
+        <option value="entregado"   {% if job.status=='entregado' %}selected{% endif %}>Entregado</option>
+        <option value="pausado"     {% if job.status=='pausado' %}selected{% endif %}>Pausado</option>
+      </select>
+      <button class="btn btn-outline-primary">Actualizar</button>
+    </form>
+
+    <a href="{{ url_for('job_print', job_id=job.id) }}" class="btn btn-outline-light">Imprimir</a>
+    <a href="{{ url_for('jobs_list') }}" class="btn btn-secondary">Volver</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header fw-bold">Cliente</div>
+      <div class="card-body">
+        <div>{{ client.full_name }}</div>
+        {% if client.phone %}<div class="text-secondary small">📞 {{ client.phone }}</div>{% endif %}
+        {% if client.email %}<div class="text-secondary small">✉️ {{ client.email }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header fw-bold">Vehículo</div>
+      <div class="card-body">
+        <div class="mb-1"><span class="text-secondary">Placa:</span> {{ vehicle.plate }}</div>
+        <div class="mb-1"><span class="text-secondary">Marca/Modelo:</span> {{ vehicle.brand }} {{ vehicle.model }}</div>
+        {% if vehicle.color %}<div class="mb-1"><span class="text-secondary">Color:</span> {{ vehicle.color }}</div>{% endif %}
+        {% if vehicle.vin %}<div class="mb-1"><span class="text-secondary">VIN:</span> {{ vehicle.vin }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header fw-bold">Checklist</div>
+      <div class="card-body small">
+        <div class="row g-1">
+          {% for k,v in job.checklist.items() %}
+          <div class="col-6">
+            <span class="text-secondary">{{ k.replace('_',' ')|title }}</span>:
+            {% if v %}<span class="badge bg-success">✔</span>{% else %}<span class="badge bg-secondary">—</span>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header fw-bold">Motivo y descripción</div>
+  <div class="card-body">
+    {% if job.reason %}<div class="mb-2"><strong>Motivo:</strong> {{ job.reason }}</div>{% endif %}
+    <pre class="mb-0" style="white-space:pre-wrap">{{ job.description }}</pre>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+    <span>Notas</span>
+    <form class="d-flex gap-2 no-print" method="post" action="{{ url_for('job_add_note', job_id=job.id) }}">
+      <input type="text" class="form-control form-control-sm" name="content" placeholder="Añadir nota…">
+      <button class="btn btn-primary btn-sm">Agregar</button>
+    </form>
+  </div>
+  <div class="card-body">
+    {% if job.notes and job.notes|length %}
+      <ul class="list-group list-group-flush">
+        {% for n in job.notes %}
+        <li class="list-group-item bg-transparent">
+          <div class="small text-secondary">{{ n.created_at|fechahora }}</div>
+          <div>{{ n.content }}</div>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="text-secondary">Sin notas.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

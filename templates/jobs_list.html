@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} - Órdenes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h4 class="mb-0">Órdenes de Trabajo</h4>
+  <a class="btn btn-brand" href="{{ url_for('jobs_new') }}">Nueva OT</a>
+</div>
+
+<form class="row g-2 mb-3">
+  <div class="col-md-6">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Buscar por motivo, cliente, placa…">
+  </div>
+  <div class="col-md-2"><button class="btn btn-outline-light w-100">Buscar</button></div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>#</th><th>Placa</th><th>Cliente</th><th>Estado</th><th>Ingreso</th><th></th></tr></thead>
+      <tbody>
+        {% for j in jobs %}
+        <tr>
+          <td>{{ j.id }}</td>
+          <td>{{ j.vehicle.plate }}</td>
+          <td>{{ j.client.full_name }}</td>
+          <td>{{ j.status|status_badge|safe }}</td>
+          <td>{{ j.intake_date|fechahora }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-light" href="{{ url_for('job_detail', job_id=j.id) }}">Ver</a>
+            <a class="btn btn-sm btn-success" href="{{ url_for('quotes_new', job_id=j.id) }}">Presupuesto</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-secondary">Sin registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

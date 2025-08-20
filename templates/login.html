@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} - Iniciar sesión{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex gap-2 align-items-center mb-3">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" height="36">
+          <h4 class="mb-0">Acceso</h4>
+        </div>
+        <form method="post" action="{{ url_for('login_post') }}">
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input class="form-control" name="username" autocomplete="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" autocomplete="current-password" required>
+          </div>
+          <button class="btn btn-brand w-100">Entrar</button>
+        </form>
+      </div>
+    </div>
+    <div class="text-center text-secondary small mt-2">admin / admin123 (semilla)</div>
+  </div>
+</div>
+{% endblock %}
